@@ -6,9 +6,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from src.features.windows import (
-    build_index, count_sum_before, seconds_since_first, seconds_since_last, to_seconds,
-)
+from src.features.windows import Lookup, Queries, build_index, to_seconds
 
 log = logging.getLogger(__name__)
 
@@ -104,37 +102,40 @@ def behavioural_features(df: pd.DataFrame) -> dict[str, np.ndarray]:
     t = to_seconds(df["ts"])
     amt = df["amount"].to_numpy()
     src, dst, pair = _encode_entities(df)
+    q_src, q_dst, q_pair = Queries.make(src, t), Queries.make(dst, t), Queries.make(pair, t)
     out_idx = build_index(src, t, amt)  # outgoing events keyed by sender
     in_idx = build_index(dst, t, amt)   # incoming events keyed by receiver
+    src_out, dst_in = Lookup(out_idx, q_src), Lookup(in_idx, q_dst)
     f: dict[str, np.ndarray] = {}
     for name, w in WINDOWS.items():
-        f[f"src_out_count_{name}"], f[f"src_out_sum_{name}"] = count_sum_before(out_idx, src, t, w)
-        f[f"dst_in_count_{name}"], f[f"dst_in_sum_{name}"] = count_sum_before(in_idx, dst, t, w)
-    cnt_all, sum_all = count_sum_before(out_idx, src, t)
+        f[f"src_out_count_{name}"], f[f"src_out_sum_{name}"] = src_out.count_sum(w)
+        f[f"dst_in_count_{name}"], f[f"dst_in_sum_{name}"] = dst_in.count_sum(w)
+    cnt_all, sum_all = src_out.count_sum()
     f["src_out_count_all"] = cnt_all
     f["src_out_mean_all"] = np.divide(sum_all, cnt_all, out=np.zeros_like(sum_all), where=cnt_all > 0)
     f["amount_vs_src_mean"] = np.divide(amt, f["src_out_mean_all"], out=np.ones_like(amt), where=cnt_all > 0)
     f["src_velocity_24h_vs_7d"] = f["src_out_sum_24h"] / (f["src_out_sum_7d"] / 7.0 + 1.0)
-    f["src_secs_since_prev_out"] = seconds_since_last(out_idx, src, t)
+    f["src_secs_since_prev_out"] = src_out.seconds_since_last()
     # Money received by the sender shortly before it pays out (layering / pass-through).
+    src_in = Lookup(in_idx, q_src)
     for name in ("24h", "7d"):
-        f[f"src_in_count_{name}"], f[f"src_in_sum_{name}"] = count_sum_before(in_idx, src, t, WINDOWS[name])
+        f[f"src_in_count_{name}"], f[f"src_in_sum_{name}"] = src_in.count_sum(WINDOWS[name])
     f["passthrough_ratio_24h"] = np.clip(f["src_in_sum_24h"] / amt, 0, 10)
-    f["dst_out_count_24h"], _ = count_sum_before(out_idx, dst, t, WINDOWS["24h"])
-    f["dst_in_count_all"], _ = count_sum_before(in_idx, dst, t)
-    f["dst_secs_since_prev_in"] = seconds_since_last(in_idx, dst, t)
-    f["pair_prev_count"], _ = count_sum_before(build_index(pair, t), pair, t)
+    f["dst_out_count_24h"], _ = Lookup(out_idx, q_dst).count_sum(WINDOWS["24h"])
+    f["dst_in_count_all"], _ = dst_in.count_sum()
+    f["dst_secs_since_prev_in"] = dst_in.seconds_since_last()
+    f["pair_prev_count"], _ = Lookup(build_index(pair, t), q_pair).count_sum()
     # Unique counterparties: count first occurrences of each pair that happened before t.
     first = ~pd.Series(pair).duplicated().to_numpy()
-    fo_out = build_index(src[first], t[first])
-    fo_in = build_index(dst[first], t[first])
-    f["src_fan_out_all"], _ = count_sum_before(fo_out, src, t)
-    f["src_new_counterparties_7d"], _ = count_sum_before(fo_out, src, t, WINDOWS["7d"])
-    f["dst_fan_in_all"], _ = count_sum_before(fo_in, dst, t)
-    f["dst_new_counterparties_7d"], _ = count_sum_before(fo_in, dst, t, WINDOWS["7d"])
+    fo_out = Lookup(build_index(src[first], t[first]), q_src)
+    fo_in = Lookup(build_index(dst[first], t[first]), q_dst)
+    f["src_fan_out_all"], _ = fo_out.count_sum()
+    f["src_new_counterparties_7d"], _ = fo_out.count_sum(WINDOWS["7d"])
+    f["dst_fan_in_all"], _ = fo_in.count_sum()
+    f["dst_new_counterparties_7d"], _ = fo_in.count_sum(WINDOWS["7d"])
     seen = build_index(np.concatenate([src, dst]), np.concatenate([t, t]))
-    f["src_age_days"] = seconds_since_first(seen, src, t) / 86400.0
-    f["dst_age_days"] = seconds_since_first(seen, dst, t) / 86400.0
+    f["src_age_days"] = Lookup(seen, q_src).seconds_since_first() / 86400.0
+    f["dst_age_days"] = Lookup(seen, q_dst).seconds_since_first() / 86400.0
     return f
 
 

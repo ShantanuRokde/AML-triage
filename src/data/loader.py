@@ -24,6 +24,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pyarrow as pa
+import pyarrow.csv as pv
 
 log = logging.getLogger(__name__)
 
@@ -63,9 +65,30 @@ def detect_schema(columns: list[str]) -> str:
     )
 
 
+def _samld_timestamps(raw: pd.DataFrame) -> pd.Series:
+    """Combine SAML-D Date + Time. Fast path when pyarrow already parsed them (date32/time32)."""
+    if "__ts" in raw:
+        return raw["__ts"]
+    return pd.to_datetime(raw["Date"].astype(str) + " " + raw["Time"].astype(str), format="%Y-%m-%d %H:%M:%S")
+
+
+def _read_samld(path: Path) -> pd.DataFrame:
+    """Read SAML-D with pyarrow, parsing Date/Time natively and combining them numerically."""
+    opts = pv.ConvertOptions(column_types={
+        "Sender_account": pa.string(), "Receiver_account": pa.string(),
+        "Date": pa.date32(), "Time": pa.time32("s"),
+    })
+    table = pv.read_csv(path, convert_options=opts)
+    days = table["Date"].to_numpy().astype("datetime64[s]")
+    secs = table["Time"].cast(pa.int32()).to_numpy().astype("timedelta64[s]")
+    raw = table.drop_columns(["Date", "Time"]).to_pandas()
+    raw["__ts"] = pd.Series(days + secs, index=raw.index)
+    return raw
+
+
 def _from_samld(raw: pd.DataFrame) -> pd.DataFrame:
     """Map a SAML-D frame onto the canonical columns."""
-    ts = pd.to_datetime(raw["Date"].astype(str) + " " + raw["Time"].astype(str), format="%Y-%m-%d %H:%M:%S")
+    ts = _samld_timestamps(raw)
     amount = raw["Amount"].astype("float64")
     return pd.DataFrame({
         "ts": ts,
@@ -152,18 +175,17 @@ def load_transactions(path: Path, sample: int | None = None) -> tuple[pd.DataFra
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(f"Transaction file not found: {path}. Set AML_DATA_PATH in .env.")
-    schema = detect_schema(read_header(path))
-    id_cols = (
-        {"Sender_account": str, "Receiver_account": str}
-        if schema == "saml-d"
-        else {"From Bank": str, "Account": str, "To Bank": str, "Account.1": str}
-    )
-    raw = pd.read_csv(path, engine="pyarrow", dtype=id_cols)
-    if schema == "saml-d":  # pyarrow parses Date/Time into objects; keep them as strings
-        raw["Date"] = raw["Date"].astype(str)
-        raw["Time"] = raw["Time"].astype(str)
+    header = read_header(path)
+    schema = detect_schema(header)
+    if schema == "saml-d":
+        raw = _read_samld(path)
+        frame = _from_samld(raw)
+    else:
+        id_cols = {"From Bank": str, "Account": str, "To Bank": str, "Account.1": str}
+        raw = pd.read_csv(path, engine="pyarrow", dtype=id_cols)
+        frame = _from_hismall(raw)
     log.info("loaded %s rows (%s schema) from %s", f"{len(raw):,}", schema, path)
-    df, _ = to_canonical(raw)
+    df = clean(frame)
     if sample:
         df = df.iloc[:sample].copy()
         log.info("using time-ordered sample of the earliest %s rows", f"{len(df):,}")

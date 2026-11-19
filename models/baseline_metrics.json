@@ -1,0 +1,18 @@
+{
+  "model": "IsolationForest",
+  "schema": "saml-d",
+  "rows": 9504852,
+  "sample": null,
+  "use_graph": true,
+  "feature_seconds": 150.5,
+  "split_boundaries": {
+    "train_start": "2022-10-07 10:35:19",
+    "val_start": "2023-04-16 21:10:37",
+    "test_start": "2023-06-19 22:08:52",
+    "test_end": "2023-08-23 10:57:12"
+  },
+  "val_pr_auc": 0.0015595709159101935,
+  "val_positive_rate": 0.001045781890298111,
+  "test_pr_auc": 0.001777222689792299,
+  "test_positive_rate": 0.0011273186176959037
+}

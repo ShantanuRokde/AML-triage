@@ -5,6 +5,10 @@ all events of one entity are contiguous and time-ordered, so a single ``np.searc
 finds how many events of that entity happened *strictly before* time t. Windows are the
 half-open interval ``[t - w, t)``: the current transaction and any other transaction with
 the same timestamp are excluded, so a feature at time t only ever sees data from before t.
+
+Performance: queries are sorted once per (entity, t) array (`Queries`) and that order is
+reused for every window, because ``entity*SHIFT + max(t - w, 0)`` preserves the (entity, t)
+order for any w. Binary searches over sorted needles walk memory in order (cache friendly).
 """
 from __future__ import annotations
 
@@ -39,36 +43,48 @@ def build_index(entity: np.ndarray, t: np.ndarray, values: np.ndarray | None = N
     return EventIndex(keys=keys[order], csum=csum)
 
 
-def _bounds(index: EventIndex, entity: np.ndarray, t: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return (entity base key, first-event position of entity, position of first event >= t)."""
-    base = entity.astype(np.int64) * SHIFT
-    start = np.searchsorted(index.keys, base, side="left")
-    hi = np.searchsorted(index.keys, base + t, side="left")
-    return base, start, hi
+@dataclass(frozen=True)
+class Queries:
+    """Query points (entity, t) with their sort order precomputed once."""
+
+    t: np.ndarray
+    base: np.ndarray
+    order: np.ndarray
+
+    @classmethod
+    def make(cls, entity: np.ndarray, t: np.ndarray) -> "Queries":
+        """Build queries for the given entity codes and int64 second timestamps."""
+        base = entity.astype(np.int64) * SHIFT
+        return cls(t=t.astype(np.int64), base=base, order=np.argsort(base + t, kind="stable"))
+
+    def search(self, keys: np.ndarray, offsets: np.ndarray) -> np.ndarray:
+        """Left insertion positions of ``base + offsets`` in `keys` (offsets must keep the order)."""
+        q = self.base + offsets
+        out = np.empty(len(q), dtype=np.int64)
+        out[self.order] = np.searchsorted(keys, q[self.order], side="left")
+        return out
 
 
-def count_sum_before(index: EventIndex, entity: np.ndarray, t: np.ndarray,
-                     window: int | None = None) -> tuple[np.ndarray, np.ndarray]:
-    """Count and sum of an entity's events in [t - window, t); window=None means all history."""
-    base, start, hi = _bounds(index, entity, t)
-    if window is None:
-        lo = start
-    else:
-        lo = np.searchsorted(index.keys, base + np.maximum(t - window, 0), side="left")
-    return (hi - lo).astype(np.float64), index.csum[hi] - index.csum[lo]
+class Lookup:
+    """Window statistics of one event index evaluated at one set of query points."""
 
+    def __init__(self, index: EventIndex, queries: Queries) -> None:
+        self.index = index
+        self.q = queries
+        self.start = queries.search(index.keys, np.zeros_like(queries.t))  # entity's first event
+        self.hi = queries.search(index.keys, queries.t)                    # first event at/after t
 
-def seconds_since_last(index: EventIndex, entity: np.ndarray, t: np.ndarray) -> np.ndarray:
-    """Seconds since the entity's most recent event strictly before t; -1 if none."""
-    base, start, hi = _bounds(index, entity, t)
-    has = hi > start
-    last = index.keys[np.maximum(hi - 1, 0)] - base
-    return np.where(has, t - last, -1).astype(np.float64)
+    def count_sum(self, window: int | None = None) -> tuple[np.ndarray, np.ndarray]:
+        """Count and sum of events in [t - window, t); window=None means all history."""
+        lo = self.start if window is None else self.q.search(self.index.keys, np.maximum(self.q.t - window, 0))
+        return (self.hi - lo).astype(np.float64), self.index.csum[self.hi] - self.index.csum[lo]
 
+    def seconds_since_last(self) -> np.ndarray:
+        """Seconds since the most recent event strictly before t; -1 if none."""
+        last = self.index.keys[np.maximum(self.hi - 1, 0)] - self.q.base
+        return np.where(self.hi > self.start, self.q.t - last, -1).astype(np.float64)
 
-def seconds_since_first(index: EventIndex, entity: np.ndarray, t: np.ndarray) -> np.ndarray:
-    """Seconds since the entity's first event strictly before t (account age); 0 if none."""
-    base, start, hi = _bounds(index, entity, t)
-    has = hi > start
-    first = index.keys[np.minimum(start, len(index.keys) - 1)] - base
-    return np.where(has, t - first, 0).astype(np.float64)
+    def seconds_since_first(self) -> np.ndarray:
+        """Seconds since the first event strictly before t (account age); 0 if none."""
+        first = self.index.keys[np.minimum(self.start, len(self.index.keys) - 1)] - self.q.base
+        return np.where(self.hi > self.start, self.q.t - first, 0).astype(np.float64)
