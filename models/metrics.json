@@ -1,0 +1,263 @@
+{
+  "dataset": "SAML-D.csv",
+  "schema": "saml-d",
+  "rows": 9504852,
+  "sample": null,
+  "use_graph": true,
+  "seed": 42,
+  "alert_budget": 0.01,
+  "split_boundaries": {
+    "train_start": "2022-10-07 10:35:19",
+    "val_start": "2023-04-16 21:10:37",
+    "test_start": "2023-06-19 22:08:52",
+    "test_end": "2023-08-23 10:57:12"
+  },
+  "splits": [
+    {
+      "split": "train",
+      "rows": 5702911,
+      "positives": 5742,
+      "rate": 0.0010068542
+    },
+    {
+      "split": "val",
+      "rows": 1900970,
+      "positives": 1988,
+      "rate": 0.0010457819
+    },
+    {
+      "split": "test",
+      "rows": 1900971,
+      "positives": 2143,
+      "rate": 0.0011273186
+    }
+  ],
+  "features": [
+    "amount",
+    "log_amount",
+    "hour",
+    "dayofweek",
+    "cross_currency",
+    "cross_border",
+    "same_account",
+    "is_round_100",
+    "is_round_1000",
+    "below_10k_band",
+    "fmt_ACH",
+    "fmt_Cash Deposit",
+    "fmt_Cash Withdrawal",
+    "fmt_Cheque",
+    "fmt_Credit card",
+    "fmt_Cross-border",
+    "fmt_Debit card",
+    "fmt_Bitcoin",
+    "fmt_Cash",
+    "fmt_Credit Card",
+    "fmt_Reinvestment",
+    "fmt_Wire",
+    "src_out_count_1h",
+    "src_out_sum_1h",
+    "dst_in_count_1h",
+    "dst_in_sum_1h",
+    "src_out_count_24h",
+    "src_out_sum_24h",
+    "dst_in_count_24h",
+    "dst_in_sum_24h",
+    "src_out_count_7d",
+    "src_out_sum_7d",
+    "dst_in_count_7d",
+    "dst_in_sum_7d",
+    "src_out_count_all",
+    "src_out_mean_all",
+    "amount_vs_src_mean",
+    "src_velocity_24h_vs_7d",
+    "src_secs_since_prev_out",
+    "src_in_count_24h",
+    "src_in_sum_24h",
+    "src_in_count_7d",
+    "src_in_sum_7d",
+    "passthrough_ratio_24h",
+    "dst_out_count_24h",
+    "dst_in_count_all",
+    "dst_secs_since_prev_in",
+    "pair_prev_count",
+    "src_fan_out_all",
+    "src_new_counterparties_7d",
+    "dst_fan_in_all",
+    "dst_new_counterparties_7d",
+    "src_age_days",
+    "dst_age_days",
+    "src_wcc_size_log",
+    "src_in_cycle",
+    "dst_in_cycle"
+  ],
+  "models": {
+    "xgboost": {
+      "threshold": 0.0005410801956895756,
+      "val": {
+        "rows": 1900970,
+        "positives": 1988,
+        "positive_rate": 0.001045781890298111,
+        "pr_auc": 0.9967505134806602,
+        "recall_at_budget": 1.0,
+        "precision_at_budget": 0.10457653866386113,
+        "precision_at_k": {
+          "100": 1.0,
+          "500": 1.0,
+          "1000": 1.0
+        },
+        "at_threshold": {
+          "threshold": 0.0005410801956895756,
+          "tp": 1988,
+          "fp": 17022,
+          "fn": 0,
+          "tn": 1881960,
+          "alerts": 19010,
+          "alert_rate": 0.010000157814168556,
+          "precision": 0.10457653866386113,
+          "recall": 1.0
+        }
+      },
+      "test": {
+        "rows": 1900971,
+        "positives": 2143,
+        "positive_rate": 0.0011273186176959037,
+        "pr_auc": 0.9993562715194895,
+        "recall_at_budget": 1.0,
+        "precision_at_budget": 0.11273014203051025,
+        "precision_at_k": {
+          "100": 1.0,
+          "500": 1.0,
+          "1000": 1.0
+        },
+        "at_threshold": {
+          "threshold": 0.0005410801956895756,
+          "tp": 2143,
+          "fp": 14589,
+          "fn": 0,
+          "tn": 1884239,
+          "alerts": 16732,
+          "alert_rate": 0.008801817597427842,
+          "precision": 0.12807793449677266,
+          "recall": 1.0
+        }
+      },
+      "best_iteration": 992,
+      "top_importance": [
+        {
+          "feature": "pair_prev_count",
+          "gain_share": 0.3517
+        },
+        {
+          "feature": "fmt_Cash Withdrawal",
+          "gain_share": 0.0961
+        },
+        {
+          "feature": "fmt_Cash Deposit",
+          "gain_share": 0.0911
+        },
+        {
+          "feature": "dst_age_days",
+          "gain_share": 0.0561
+        },
+        {
+          "feature": "dst_in_count_24h",
+          "gain_share": 0.0545
+        },
+        {
+          "feature": "src_fan_out_all",
+          "gain_share": 0.0532
+        },
+        {
+          "feature": "dst_fan_in_all",
+          "gain_share": 0.0433
+        },
+        {
+          "feature": "src_in_count_7d",
+          "gain_share": 0.0277
+        },
+        {
+          "feature": "amount",
+          "gain_share": 0.0257
+        },
+        {
+          "feature": "dst_secs_since_prev_in",
+          "gain_share": 0.0244
+        },
+        {
+          "feature": "cross_currency",
+          "gain_share": 0.0177
+        },
+        {
+          "feature": "src_secs_since_prev_out",
+          "gain_share": 0.0169
+        },
+        {
+          "feature": "src_out_count_all",
+          "gain_share": 0.0137
+        },
+        {
+          "feature": "src_age_days",
+          "gain_share": 0.0122
+        },
+        {
+          "feature": "dst_new_counterparties_7d",
+          "gain_share": 0.0111
+        }
+      ]
+    },
+    "isolation_forest": {
+      "threshold": 0.5586218578510136,
+      "val": {
+        "rows": 1900970,
+        "positives": 1988,
+        "positive_rate": 0.001045781890298111,
+        "pr_auc": 0.0015595709159101935,
+        "recall_at_budget": 0.008551307847082495,
+        "precision_at_budget": 0.0008942661756970016,
+        "precision_at_k": {
+          "100": 0.0,
+          "500": 0.0,
+          "1000": 0.0
+        },
+        "at_threshold": {
+          "threshold": 0.5586218578510136,
+          "tp": 17,
+          "fp": 18993,
+          "fn": 1971,
+          "tn": 1879989,
+          "alerts": 19010,
+          "alert_rate": 0.010000157814168556,
+          "precision": 0.0008942661756970016,
+          "recall": 0.008551307847082495
+        }
+      },
+      "test": {
+        "rows": 1900971,
+        "positives": 2143,
+        "positive_rate": 0.0011273186176959037,
+        "pr_auc": 0.001777222689792299,
+        "recall_at_budget": 0.013065795613625758,
+        "precision_at_budget": 0.0014729089952656496,
+        "precision_at_k": {
+          "100": 0.0,
+          "500": 0.0,
+          "1000": 0.001
+        },
+        "at_threshold": {
+          "threshold": 0.5586218578510136,
+          "tp": 31,
+          "fp": 22360,
+          "fn": 2112,
+          "tn": 1876468,
+          "alerts": 22391,
+          "alert_rate": 0.011778717297633683,
+          "precision": 0.0013844848376579875,
+          "recall": 0.014465702286514233
+        }
+      }
+    }
+  },
+  "created_at": "2026-11-21T08:45:38+00:00",
+  "runtime_seconds": 2296.1
+}

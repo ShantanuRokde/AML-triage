@@ -1,0 +1,407 @@
+{
+  "split": "test",
+  "xgboost": {
+    "recall_by_typology": [
+      {
+        "typology": "Behavioural_Change_1",
+        "n": 90,
+        "caught": 90,
+        "median_score": 0.9999876618,
+        "recall": 1.0
+      },
+      {
+        "typology": "Behavioural_Change_2",
+        "n": 94,
+        "caught": 94,
+        "median_score": 0.9999940991,
+        "recall": 1.0
+      },
+      {
+        "typology": "Bipartite",
+        "n": 43,
+        "caught": 43,
+        "median_score": 0.9999972582,
+        "recall": 1.0
+      },
+      {
+        "typology": "Cash_Withdrawal",
+        "n": 274,
+        "caught": 274,
+        "median_score": 0.9999545813,
+        "recall": 1.0
+      },
+      {
+        "typology": "Cycle",
+        "n": 50,
+        "caught": 50,
+        "median_score": 0.9999906421,
+        "recall": 1.0
+      },
+      {
+        "typology": "Deposit-Send",
+        "n": 209,
+        "caught": 209,
+        "median_score": 0.9999990463,
+        "recall": 1.0
+      },
+      {
+        "typology": "Fan_In",
+        "n": 64,
+        "caught": 64,
+        "median_score": 0.9999969602,
+        "recall": 1.0
+      },
+      {
+        "typology": "Fan_Out",
+        "n": 76,
+        "caught": 76,
+        "median_score": 0.9999971986,
+        "recall": 1.0
+      },
+      {
+        "typology": "Gather-Scatter",
+        "n": 100,
+        "caught": 100,
+        "median_score": 0.9999958873,
+        "recall": 1.0
+      },
+      {
+        "typology": "Layered_Fan_In",
+        "n": 156,
+        "caught": 156,
+        "median_score": 0.9999960065,
+        "recall": 1.0
+      },
+      {
+        "typology": "Layered_Fan_Out",
+        "n": 107,
+        "caught": 107,
+        "median_score": 0.9999871254,
+        "recall": 1.0
+      },
+      {
+        "typology": "Over-Invoicing",
+        "n": 10,
+        "caught": 10,
+        "median_score": 0.9999983311,
+        "recall": 1.0
+      },
+      {
+        "typology": "Scatter-Gather",
+        "n": 75,
+        "caught": 75,
+        "median_score": 0.99999547,
+        "recall": 1.0
+      },
+      {
+        "typology": "Single_large",
+        "n": 45,
+        "caught": 45,
+        "median_score": 0.9999972582,
+        "recall": 1.0
+      },
+      {
+        "typology": "Smurfing",
+        "n": 176,
+        "caught": 176,
+        "median_score": 0.9999786615,
+        "recall": 1.0
+      },
+      {
+        "typology": "Stacked Bipartite",
+        "n": 166,
+        "caught": 166,
+        "median_score": 0.9999970794,
+        "recall": 1.0
+      },
+      {
+        "typology": "Structuring",
+        "n": 408,
+        "caught": 408,
+        "median_score": 0.999999404,
+        "recall": 1.0
+      }
+    ],
+    "false_positives_by_type": [
+      {
+        "typology": "Normal_Cash_Deposits",
+        "n": 45269,
+        "flagged": 4461,
+        "fp_rate": 0.0985442577,
+        "share_of_fps": 0.3057783261
+      },
+      {
+        "typology": "Normal_Foward",
+        "n": 8490,
+        "flagged": 4192,
+        "fp_rate": 0.4937573616,
+        "share_of_fps": 0.2873397765
+      },
+      {
+        "typology": "Normal_Cash_Withdrawal",
+        "n": 60026,
+        "flagged": 2931,
+        "fp_rate": 0.0488288408,
+        "share_of_fps": 0.2009047913
+      },
+      {
+        "typology": "Normal_Fan_Out",
+        "n": 461973,
+        "flagged": 574,
+        "fp_rate": 0.0012424969,
+        "share_of_fps": 0.0393447118
+      },
+      {
+        "typology": "Normal_Mutual",
+        "n": 24939,
+        "flagged": 541,
+        "fp_rate": 0.0216929308,
+        "share_of_fps": 0.0370827336
+      },
+      {
+        "typology": "Normal_Fan_In",
+        "n": 410465,
+        "flagged": 517,
+        "fp_rate": 0.0012595471,
+        "share_of_fps": 0.0354376585
+      },
+      {
+        "typology": "Normal_Plus_Mutual",
+        "n": 45888,
+        "flagged": 412,
+        "fp_rate": 0.0089783821,
+        "share_of_fps": 0.0282404551
+      },
+      {
+        "typology": "Normal_Periodical",
+        "n": 42106,
+        "flagged": 304,
+        "fp_rate": 0.0072198737,
+        "share_of_fps": 0.0208376174
+      },
+      {
+        "typology": "Normal_single_large",
+        "n": 4092,
+        "flagged": 291,
+        "fp_rate": 0.0711143695,
+        "share_of_fps": 0.0199465351
+      },
+      {
+        "typology": "Normal_Small_Fan_Out",
+        "n": 690745,
+        "flagged": 208,
+        "fp_rate": 0.0003011241,
+        "share_of_fps": 0.0142573172
+      },
+      {
+        "typology": "Normal_Group",
+        "n": 104835,
+        "flagged": 158,
+        "fp_rate": 0.0015071303,
+        "share_of_fps": 0.0108300775
+      }
+    ]
+  },
+  "isolation_forest": {
+    "recall_by_typology": [
+      {
+        "typology": "Behavioural_Change_1",
+        "n": 90,
+        "caught": 0,
+        "median_score": 0.5059799142,
+        "recall": 0.0
+      },
+      {
+        "typology": "Bipartite",
+        "n": 43,
+        "caught": 0,
+        "median_score": 0.4654390756,
+        "recall": 0.0
+      },
+      {
+        "typology": "Fan_In",
+        "n": 64,
+        "caught": 0,
+        "median_score": 0.4782547568,
+        "recall": 0.0
+      },
+      {
+        "typology": "Cycle",
+        "n": 50,
+        "caught": 0,
+        "median_score": 0.4959477479,
+        "recall": 0.0
+      },
+      {
+        "typology": "Scatter-Gather",
+        "n": 75,
+        "caught": 0,
+        "median_score": 0.4599594559,
+        "recall": 0.0
+      },
+      {
+        "typology": "Smurfing",
+        "n": 176,
+        "caught": 0,
+        "median_score": 0.4547430764,
+        "recall": 0.0
+      },
+      {
+        "typology": "Stacked Bipartite",
+        "n": 166,
+        "caught": 0,
+        "median_score": 0.452955412,
+        "recall": 0.0
+      },
+      {
+        "typology": "Gather-Scatter",
+        "n": 100,
+        "caught": 0,
+        "median_score": 0.4626092419,
+        "recall": 0.0
+      },
+      {
+        "typology": "Layered_Fan_In",
+        "n": 156,
+        "caught": 1,
+        "median_score": 0.4635172802,
+        "recall": 0.0064102564
+      },
+      {
+        "typology": "Layered_Fan_Out",
+        "n": 107,
+        "caught": 1,
+        "median_score": 0.4514116137,
+        "recall": 0.0093457944
+      },
+      {
+        "typology": "Structuring",
+        "n": 408,
+        "caught": 4,
+        "median_score": 0.4923313239,
+        "recall": 0.0098039216
+      },
+      {
+        "typology": "Behavioural_Change_2",
+        "n": 94,
+        "caught": 1,
+        "median_score": 0.5194453451,
+        "recall": 0.0106382979
+      },
+      {
+        "typology": "Fan_Out",
+        "n": 76,
+        "caught": 1,
+        "median_score": 0.4691418803,
+        "recall": 0.0131578947
+      },
+      {
+        "typology": "Deposit-Send",
+        "n": 209,
+        "caught": 3,
+        "median_score": 0.4932926221,
+        "recall": 0.014354067
+      },
+      {
+        "typology": "Cash_Withdrawal",
+        "n": 274,
+        "caught": 14,
+        "median_score": 0.4741150125,
+        "recall": 0.0510948905
+      },
+      {
+        "typology": "Single_large",
+        "n": 45,
+        "caught": 3,
+        "median_score": 0.5028911595,
+        "recall": 0.0666666667
+      },
+      {
+        "typology": "Over-Invoicing",
+        "n": 10,
+        "caught": 3,
+        "median_score": 0.5204710725,
+        "recall": 0.3
+      }
+    ],
+    "false_positives_by_type": [
+      {
+        "typology": "Normal_Fan_Out",
+        "n": 461973,
+        "flagged": 9687,
+        "fp_rate": 0.0209687579,
+        "share_of_fps": 0.4332289803
+      },
+      {
+        "typology": "Normal_Fan_In",
+        "n": 410465,
+        "flagged": 7133,
+        "fp_rate": 0.0173778519,
+        "share_of_fps": 0.3190071556
+      },
+      {
+        "typology": "Normal_Group",
+        "n": 104835,
+        "flagged": 2432,
+        "fp_rate": 0.0231983593,
+        "share_of_fps": 0.108765653
+      },
+      {
+        "typology": "Normal_Small_Fan_Out",
+        "n": 690745,
+        "flagged": 1747,
+        "fp_rate": 0.0025291533,
+        "share_of_fps": 0.0781305903
+      },
+      {
+        "typology": "Normal_Mutual",
+        "n": 24939,
+        "flagged": 480,
+        "fp_rate": 0.0192469626,
+        "share_of_fps": 0.0214669052
+      },
+      {
+        "typology": "Normal_Plus_Mutual",
+        "n": 45888,
+        "flagged": 385,
+        "fp_rate": 0.008389993,
+        "share_of_fps": 0.0172182469
+      },
+      {
+        "typology": "Normal_Cash_Withdrawal",
+        "n": 60026,
+        "flagged": 183,
+        "fp_rate": 0.0030486789,
+        "share_of_fps": 0.0081842576
+      },
+      {
+        "typology": "Normal_Cash_Deposits",
+        "n": 45269,
+        "flagged": 162,
+        "fp_rate": 0.0035786079,
+        "share_of_fps": 0.0072450805
+      },
+      {
+        "typology": "Normal_Periodical",
+        "n": 42106,
+        "flagged": 117,
+        "fp_rate": 0.0027787014,
+        "share_of_fps": 0.0052325581
+      },
+      {
+        "typology": "Normal_single_large",
+        "n": 4092,
+        "flagged": 22,
+        "fp_rate": 0.0053763441,
+        "share_of_fps": 0.0009838998
+      },
+      {
+        "typology": "Normal_Foward",
+        "n": 8490,
+        "flagged": 12,
+        "fp_rate": 0.0014134276,
+        "share_of_fps": 0.0005366726
+      }
+    ]
+  }
+}
