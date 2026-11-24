@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AML Monitor</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script type="module" src="/static/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#detail">Skip to alert detail</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">◆</span>
+      <div>
+        <h1>AML Monitor</h1>
+        <p class="tagline">The model ranks · the LLM drafts · <strong>you decide</strong></p>
+      </div>
+    </div>
+    <dl class="metrics" id="metrics" aria-label="Model and queue metrics" aria-busy="true">
+      <div class="metric"><dt>PR-AUC <span class="muted">(test)</span></dt><dd data-metric="pr_auc">–</dd></div>
+      <div class="metric"><dt>Recall @ 1% budget</dt><dd data-metric="recall">–</dd></div>
+      <div class="metric"><dt>Precision @ 1%</dt><dd data-metric="precision">–</dd></div>
+      <div class="metric"><dt>Reviewed today</dt><dd data-metric="reviewed_today">–</dd></div>
+      <div class="metric"><dt>Pending</dt><dd data-metric="pending">–</dd></div>
+    </dl>
+  </header>
+  <p class="dataset-note" id="dataset-note" hidden></p>
+
+  <main class="layout">
+    <aside class="queue" aria-labelledby="queue-title">
+      <div class="queue-head">
+        <h2 id="queue-title">Alert queue</h2>
+        <p class="hint"><kbd>j</kbd>/<kbd>k</kbd> next / previous</p>
+      </div>
+      <form class="filters" id="filters" role="search" aria-label="Filter alerts">
+        <label>Status
+          <select name="status" id="filter-status">
+            <option value="pending" selected>Pending</option>
+            <option value="">All</option>
+            <option value="approved">Approved</option>
+            <option value="dismissed">Dismissed</option>
+          </select>
+        </label>
+        <label>Min score
+          <input type="number" name="min_score" id="filter-score" min="0" max="1" step="0.01" value="0" inputmode="decimal">
+        </label>
+      </form>
+      <p class="queue-count" id="queue-count" aria-live="polite"></p>
+      <ul class="alert-list" id="alert-list" role="listbox" aria-label="Alerts ranked by risk score" tabindex="0"></ul>
+      <div class="queue-foot">
+        <button type="button" class="btn btn-ghost" id="load-more" hidden>Load more</button>
+      </div>
+    </aside>
+
+    <section class="detail" id="detail" aria-live="polite" tabindex="-1">
+      <div class="empty-state">
+        <h2>Select an alert</h2>
+        <p>Pick an alert from the queue, or press <kbd>j</kbd> to start at the top.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

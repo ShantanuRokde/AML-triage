@@ -126,7 +126,7 @@ def train(sample: int | None = None, use_graph: bool = False, synthetic: bool = 
     }).to_parquet(settings.processed_dir / "scores.parquet", index=False)
 
     _print_summary(models)
-    error_analysis.run("test")
+    error_analysis.run("test", settings)
     build_alert_store(settings, df=df, x=x, labels=labels, booster=booster)
     print(f"\nDone in {round(time.time() - t0, 1)}s. Metrics: {settings.model_dir / 'metrics.json'}")
     return metrics

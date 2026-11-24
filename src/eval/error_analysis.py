@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.config import get_settings
+from src.config import Settings, get_settings
 
 
 def recall_by_typology(df: pd.DataFrame, score_col: str, threshold: float) -> pd.DataFrame:
@@ -72,9 +72,9 @@ def _records(table: pd.DataFrame) -> list[dict[str, object]]:
     return json.loads(table.reset_index().to_json(orient="records"))
 
 
-def run(split: str = "test") -> dict[str, object]:
+def run(split: str = "test", settings: Settings | None = None) -> dict[str, object]:
     """Compute per-typology recall and false-positive tables for every scored model."""
-    settings = get_settings()
+    settings = settings or get_settings()
     metrics = json.loads((settings.model_dir / "metrics.json").read_text())
     scores = pd.read_parquet(settings.processed_dir / "scores.parquet")
     df = scores[scores["split"] == split]
