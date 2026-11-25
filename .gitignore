@@ -4,3 +4,4 @@ data/*.db
 data/processed/
 __pycache__/
 .env
+docs/
